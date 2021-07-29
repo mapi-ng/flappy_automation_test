@@ -6,11 +6,12 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   laser_assembler
+  tf2_ros
 )
 
 catkin_package(
   #INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp rospy std_msgs laser_assembler
+  CATKIN_DEPENDS roscpp rospy std_msgs laser_assembler tf2_ros
 )
 
 include_directories(
