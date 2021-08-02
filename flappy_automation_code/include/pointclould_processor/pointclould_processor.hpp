@@ -6,15 +6,17 @@ class PointCloudProcessor
 {
   private:
     bool is_started_ = false;
-    ros::Rate rate_ = 10;
-    float leaf_size_ = 0.01;
+    bool publish_pointclouds_ = false;
+    float leaf_size_ = 0.5f;
+    ros::Rate rate_ = 4;
 
     ros::ServiceClient laser_assembler_client_;
     //Publisher for assembled pointcloud2
     ros::Publisher pub_pc2_;
+    ros::Publisher pub_pc2_filtered_;
 
     std::unique_ptr<sensor_msgs::PointCloud2> requestPointCloud();
-    void processPointClould(std::unique_ptr<sensor_msgs::PointCloud2> clould_msg);
+    void processPointClould(const sensor_msgs::PointCloud2& clould_msg);
 
   public:
     PointCloudProcessor() = delete;

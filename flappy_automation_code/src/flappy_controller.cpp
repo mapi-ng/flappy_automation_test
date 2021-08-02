@@ -39,7 +39,7 @@ void BirdController::laserScanCallback(const sensor_msgs::LaserScan::ConstPtr& m
 {
   //msg has the format of sensor_msgs::LaserScan
   //print laser angle and range
-  ROS_INFO("Laser range: %f, angle: %f", msg->ranges[0], msg->angle_min);
+  ROS_DEBUG("Laser range: %f, angle: %f", msg->ranges[0], msg->angle_min);
 }
 
 void BirdController::broadcastBirdTransform(float x, float y)
