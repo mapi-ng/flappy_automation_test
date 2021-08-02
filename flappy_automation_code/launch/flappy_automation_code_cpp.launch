@@ -3,9 +3,10 @@
 
   <node name="laser_scan_assembler" pkg="laser_assembler" type="laser_scan_assembler" output="screen">
     <remap from="scan" to="flappy_laser_scan" />
-    <param name="max_scans" type="int" value="100" />
+    <param name="max_scans" type="int" value="30" />
     <param name="fixed_frame" type="string" value="map" />
   </node>
+  <node name="pointcloud_processor" pkg="flappy_automation_code" type="pointcloud_processor" output="screen" />
   <node name="flappy_automation_code" pkg="flappy_automation_code" type="flappy_automation_code_node" output="screen" />
   <node name="flappy_main_game" pkg="flappy_main_game" type="flappy.py" output="screen" />
 </launch>
