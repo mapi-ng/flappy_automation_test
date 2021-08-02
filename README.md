@@ -72,6 +72,8 @@ To get the state of the bird velocity readings and laserscans are published and 
 
 ### Dependencies
 - sudo apt install ros-kinetic-laser-assembler
+- sudo apt install ros-kinetic-pcl-ros
+
 ### Build and run
 Once the code has been modified run the catkin_make command again,
 ```

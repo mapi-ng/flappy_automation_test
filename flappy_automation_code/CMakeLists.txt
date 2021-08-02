@@ -14,30 +14,34 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 catkin_package(
-  #INCLUDE_DIRS include
+  INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp rospy std_msgs laser_assembler tf2_ros pcl_ros
 )
 
-include_directories(
-  #include
-  ${catkin_INCLUDE_DIRS}
+add_executable(${PROJECT_NAME}_node
+  src/flappy_automation_code.cpp
+  src/flappy_controller.cpp
 )
 
-add_executable(${PROJECT_NAME}_node src/flappy_automation_code.cpp)
+target_include_directories(${PROJECT_NAME}_node PUBLIC
+  include
+  ${catkin_INCLUDE_DIRS}
+)
 
 target_link_libraries(${PROJECT_NAME}_node
   ${catkin_LIBRARIES}
 )
 
-add_executable(pointcloud_processor
+add_executable(pointcloud_processor_node
+  src/pointcloud_processor_node.cpp
   src/pointcloud_processor.cpp
 )
 
-target_include_directories(pointcloud_processor PUBLIC
-  #include
+target_include_directories(pointcloud_processor_node PUBLIC
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
-target_link_libraries(pointcloud_processor
+target_link_libraries(pointcloud_processor_node
   ${catkin_LIBRARIES}
 )

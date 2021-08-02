@@ -6,7 +6,7 @@
     <param name="max_scans" type="int" value="30" />
     <param name="fixed_frame" type="string" value="map" />
   </node>
-  <node name="pointcloud_processor" pkg="flappy_automation_code" type="pointcloud_processor" output="screen" />
+  <node name="pointcloud_processor" pkg="flappy_automation_code" type="pointcloud_processor_node" output="screen" />
   <node name="flappy_automation_code" pkg="flappy_automation_code" type="flappy_automation_code_node" output="screen" />
   <node name="flappy_main_game" pkg="flappy_main_game" type="flappy.py" output="screen" />
 </launch>
