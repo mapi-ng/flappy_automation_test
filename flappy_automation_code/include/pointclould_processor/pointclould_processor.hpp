@@ -5,6 +5,10 @@
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
 
+using PointCloudXYZ = pcl::PointCloud<pcl::PointXYZ>;
+using PointCloudXYZAlignedVector = std::vector<PointCloudXYZ,
+    Eigen::aligned_allocator<PointCloudXYZ>>;
+
 class PointCloudProcessor
 {
   private:
@@ -15,17 +19,17 @@ class PointCloudProcessor
     float cluster_tolerance_ = 0.6;
     float min_cluster_size_ = 5;
     float max_cluster_size_ = 50;
+    int pointcloud_acquisition_time_ = 5;
 
     ros::Rate rate_ = 2;
 
     ros::ServiceClient laser_assembler_client_;
-    //Publisher for assembled pointcloud2
     ros::Publisher pub_pc2_;
     ros::Publisher pub_pc2_filtered_;
 
     std::unique_ptr<sensor_msgs::PointCloud2> requestPointCloud();
     void processPointClould(const sensor_msgs::PointCloud2& clould_msg);
-    void extractClusters(const pcl::PCLPointCloud2& cloud);
+    PointCloudXYZAlignedVector extractClusters(const pcl::PCLPointCloud2& cloud);
 
   public:
     PointCloudProcessor() = delete;
