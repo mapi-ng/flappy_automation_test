@@ -82,3 +82,4 @@ void PointCloudProcessor::spin()
     rate_.sleep();
   }
 }
+
