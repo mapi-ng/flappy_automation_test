@@ -17,11 +17,15 @@ PointCloudProcessor::PointCloudProcessor(ros::NodeHandle &nh)
   nh.getParam("cluster_tolerance", cluster_tolerance_);
   nh.getParam("min_cluster_size", min_cluster_size_);
   nh.getParam("max_cluster_size", max_cluster_size_);
+  nh.getParam("pointcloud_acquisition_time", pointcloud_acquisition_time_);
+
   ROS_INFO_STREAM("leaf_size set to: " << leaf_size_);
   ROS_INFO_STREAM("publish_pointclouds set to: " << publish_pointclouds_);
   ROS_INFO_STREAM("cluster_tolerance set to: " << cluster_tolerance_);
   ROS_INFO_STREAM("min_cluster_size set to: " << min_cluster_size_);
   ROS_INFO_STREAM("max_cluster_size set to: " << max_cluster_size_);
+  ROS_INFO_STREAM("pointcloud_acquisition_time set to: " << pointcloud_acquisition_time_);
+
   pub_pc2_ = nh.advertise<sensor_msgs::PointCloud2>("/flappy_pointcloud2", 1);
   pub_pc2_filtered_ = nh.advertise<sensor_msgs::PointCloud2>("/flappy_pointcloud2_filtered", 1);
   ros::service::waitForService("/assemble_scans2");
@@ -31,7 +35,8 @@ PointCloudProcessor::PointCloudProcessor(ros::NodeHandle &nh)
 std::unique_ptr<sensor_msgs::PointCloud2> PointCloudProcessor::requestPointCloud()
 {
   laser_assembler::AssembleScans2 srv;
-  srv.request.begin = ros::Time::now() - ros::Duration(5, 0);
+  srv.request.begin =
+    ros::Time::now() - ros::Duration(pointcloud_acquisition_time_, 0);
   srv.request.end = ros::Time::now();
   if (!laser_assembler_client_.call(srv))
   {
@@ -72,15 +77,22 @@ void PointCloudProcessor::processPointClould(const sensor_msgs::PointCloud2& clo
     sensor_msgs::PointCloud2 filtered_pc;
     pcl_conversions::fromPCL(cloud_filtered, filtered_pc);
     pub_pc2_filtered_.publish(filtered_pc);
-    ROS_INFO_STREAM("Filtered pointcloud size: " << filtered_pc.data.size());
+    ROS_DEBUG_STREAM("Filtered pointcloud size: " << filtered_pc.data.size());
   }
 
-  extractClusters(cloud_filtered);
+  auto clusters = extractClusters(cloud_filtered);
+
+  /* TODO:
+   * 1. Bounding box for each cluster
+   * 2. Size of gaps in Y axis between each two neighboring clusters.
+   * 3. Filter out only gaps big enough for bird to pass.
+   * 4. Return position of the gap closest to the Y coordinate of the bird.
+   */
 }
 
-void PointCloudProcessor::extractClusters(const pcl::PCLPointCloud2& cloud)
+PointCloudXYZAlignedVector PointCloudProcessor::extractClusters(const pcl::PCLPointCloud2& cloud)
 {
-  using PointCloudXYZ = pcl::PointCloud<pcl::PointXYZ>;
+  // Raw pointer to work with PCL interfaces
   PointCloudXYZ *cloud_xyz(new PointCloudXYZ);
   pcl::search::KdTree<pcl::PointXYZ>::Ptr search_tree(new pcl::search::KdTree<pcl::PointXYZ>);
 
@@ -102,7 +114,10 @@ void PointCloudProcessor::extractClusters(const pcl::PCLPointCloud2& cloud)
   ROS_INFO("Done");
 
   ROS_INFO_STREAM("Num indices: " << cluster_indices.size());
-  std::vector<PointCloudXYZ, Eigen::aligned_allocator<PointCloudXYZ>> clustered_clouds;
+
+  // aligned_allocator is required when using STL containers before C++17
+  // http://eigen.tuxfamily.org/dox-devel/group__TopicStlContainers.html#title1
+  PointCloudXYZAlignedVector clustered_clouds;
 
   for (auto cluster_idx : cluster_indices)
   {
@@ -118,7 +133,7 @@ void PointCloudProcessor::extractClusters(const pcl::PCLPointCloud2& cloud)
 
   ROS_INFO_STREAM("Num clusters: " << clustered_clouds.size());
 
-  //return clustered_clouds;
+  return clustered_clouds;
 }
 
 void PointCloudProcessor::spin()
