@@ -70,6 +70,10 @@ Take your pick.
 
 To get the state of the bird velocity readings and laserscans are published and an acceleration command can be given for actuating the Flappy Bird. Callbacks for these topics and examples of how to read the returned messages is provided in the code.
 
+### Dependencies
+- sudo apt install ros-kinetic-laser-assembler
+- sudo apt install ros-kinetic-pcl-ros
+
 ### Build and run
 Once the code has been modified run the catkin_make command again,
 ```
